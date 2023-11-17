@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "web-hw9"
+version = "0.1.0"
+description = ""
+authors = ["OlgaSirenko <132263673+CamillaSirenko@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+bs4 = "^0.0.1"
+requests = "^2.31.0"
+pymongo = "^4.6.0"
+mongoengine = "^0.27.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
