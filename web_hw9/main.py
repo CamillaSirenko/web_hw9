@@ -26,27 +26,47 @@ def scrape_quotes():
 
     return quotes
 
+
+
 def scrape_authors():
     base_url = "http://quotes.toscrape.com"
-    authors = []
+    authors_set = set()
 
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    for author in soup.select('.author'):
-        name = author.get_text()
-        authors.append({
-            "name": name,
-            "url": base_url + "/author/" + name.replace(" ", "-")
+    for author_link in soup.select('.author + a'):
+        author_url = base_url + author_link['href']
+        authors_set.add(author_url)
+
+    
+    authors_list = list(authors_set)
+
+     
+    authors_info = []
+    for author_url in authors_list:
+        author_response = requests.get(author_url)
+        author_soup = BeautifulSoup(author_response.text, 'html.parser')
+
+        
+        author_name = author_soup.select_one('.author-title').get_text()
+        birth_date = author_soup.select_one('.author-born-date').get_text()
+        bio = author_soup.select_one('.author-description').get_text()
+
+        authors_info.append({
+            "name": author_name,
+            "birth_date": birth_date,
+            "bio": bio,
+            "url": author_url
         })
 
-    return authors
+    return authors_info
 
 quotes = scrape_quotes()
 authors = scrape_authors()
 
 with open('quotes.json', 'w', encoding='utf-8') as f:
-    json.dump(quotes, f,ensure_ascii=False, indent=2 )
+    json.dump(quotes, f, ensure_ascii=False, indent=2)
 
 with open('authors.json', 'w', encoding='utf-8') as f:
     json.dump(authors, f, ensure_ascii=False, indent=2)
