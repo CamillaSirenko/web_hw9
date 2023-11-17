@@ -31,24 +31,32 @@ def scrape_quotes():
 def scrape_authors():
     base_url = "http://quotes.toscrape.com"
     authors_set = set()
+    page_number = 1
 
-    response = requests.get(base_url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    while True:
+        response = requests.get(f"{base_url}/page/{page_number}/")
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-    for author_link in soup.select('.author + a'):
-        author_url = base_url + author_link['href']
-        authors_set.add(author_url)
+        for author_link in soup.select('.author + a'):
+            author_url = base_url + author_link['href']
+            authors_set.add(author_url)
+
+        next_page = soup.select_one('.next > a')
+        if next_page:
+            page_number += 1
+        else:
+            break
 
     
     authors_list = list(authors_set)
 
-     
+
     authors_info = []
     for author_url in authors_list:
         author_response = requests.get(author_url)
         author_soup = BeautifulSoup(author_response.text, 'html.parser')
 
-        
+        # Extract author information as needed (you may need to customize this part)
         author_name = author_soup.select_one('.author-title').get_text()
         birth_date = author_soup.select_one('.author-born-date').get_text()
         bio = author_soup.select_one('.author-description').get_text()
